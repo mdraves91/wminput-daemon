@@ -1,0 +1,64 @@
+#!/bin/bash
+# /etc/init.d/wminput-daemon
+### BEGIN INIT INFO
+# Provides:          wminput-daemon
+# Required-Start:    $network $local_fs $remote_fs bluetooth
+# Required-Stop::    $network $local_fs $remote_fs
+# Should-Start:      $all
+# Should-Stop:       $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start two wminput daemons at boot time
+# Description:       Very simple startup script to start two instances of wminput in daemon mode on boot.
+### END INIT INFO
+
+
+# This file may be in a different place on other systems.
+# One place to check is /etc/init.d/functions
+. /lib/lsb/init-functions
+
+# Note that the bluetooth addresses of the remotes are supplied, this
+# is because wminput has issues when multiple instances are running
+# and they don't all supply a target bluetooth address.
+WIIMOTE1=00:19:1D:66:2B:FD
+WIIMOTE2=00:17:AB:2F:7F:69
+
+P1CONFIG="/home/pi/.cwiid/wminput/buttons-player1"
+P2CONFIG="/home/pi/.cwiid/wminput/buttons-player2"
+
+start_daemon () {
+    # Makes sure that the blueooth service and a bluetooth device are available
+    if ps -ef | grep bluetooth | grep -v grep > /dev/null && hcitool dev | grep hci* > /dev/null
+    then
+		log_success_msg "Starting wminput-daemon"
+    	sudo /usr/bin/wminput -d -c $P1CONFIG $WIIMOTE1 &> /dev/null &
+    	sudo /usr/bin/wminput -d -c $P2CONFIG $WIIMOTE2 &> /dev/null &
+    else
+        log_failure_msg "Bluetooth device is not available"
+    fi
+}
+
+stop_daemon () {
+	echo "Stopping wminput-daemon"
+	sudo killall -9 wminput &> /dev/null
+}
+
+case "$1" in
+
+	start)
+        start_daemon
+		;;
+	stop)
+        stop_daemon
+		;;
+    restart)
+        stop_daemon
+        start_daemon
+		;;
+	*)
+		echo "Usage: /etc/init.d/wminput-daemon {start|stop|restart}"
+		;;
+
+esac
+
+exit 0
