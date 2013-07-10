@@ -31,8 +31,10 @@ start_daemon () {
     if ps -ef | grep bluetooth | grep -v grep > /dev/null && hcitool dev | grep hci* > /dev/null
     then
 		log_success_msg "Starting wminput-daemon"
-    	sudo /usr/bin/wminput -d -c $P1CONFIG $WIIMOTE1 &> /dev/null &
+        sudo /usr/bin/wminput -d -c $P1CONFIG $WIIMOTE1 &> /dev/null &
     	sudo /usr/bin/wminput -d -c $P2CONFIG $WIIMOTE2 &> /dev/null &
+        sudo /home/pi/.cwiid/./btchecker.sh &
+
     else
         log_failure_msg "Bluetooth device is not available"
     fi
