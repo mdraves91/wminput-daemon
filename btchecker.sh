@@ -9,9 +9,8 @@ do
         break
     fi
 
-    # If a problem has occurred with the bluetooth service or there is
-    # no longer a local bluetooth device, stop the daemon.
-    if ! ps -ef | grep "bluetooth" | grep -v "grep" > /dev/null || ! hcitool dev | grep "hci*" > /dev/null
+    # If a local bluetooth device cannot be detected, stop the daemon.
+    if ! hcitool dev | grep "hci*" > /dev/null
     then
         sudo service wminput-daemon stop
         break

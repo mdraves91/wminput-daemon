@@ -27,8 +27,8 @@ P1CONFIG="/home/pi/.cwiid/wminput/buttons-player1"
 P2CONFIG="/home/pi/.cwiid/wminput/buttons-player2"
 
 start_daemon () {
-    # Makes sure that the blueooth service and a bluetooth device are available
-    if ps -ef | grep bluetooth | grep -v grep > /dev/null && hcitool dev | grep hci* > /dev/null
+    # Makes sure that a local bluetooth device is available
+    if hcitool dev | grep hci* > /dev/null
     then
 		log_success_msg "Starting wminput-daemon"
         sudo /usr/bin/wminput -d -c $P1CONFIG $WIIMOTE1 &> /dev/null &
